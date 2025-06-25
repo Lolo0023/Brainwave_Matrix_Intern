@@ -146,11 +146,11 @@ class ATMApp:
             return
         try:
             amount=float(input_money)
-            if input_money<=0:
-                messagebox.showerror("Error","Withdrawal amount must be grater than 0")
+            if amount<=0:
+                messagebox.showerror("Error","Withdrawal amount must be greater than 0")
                 return
             self.ATM.withdraw(self.account, amount)
-            messagebox.showinfo("Success", f"deposite ${amount:.2f} successfully.")
+            messagebox.showinfo("Success", f"withdraw ${amount:.2f} successfully.")
         except:
             messagebox.showerror("Error", "Transaction declined: Not enough balance.")
             

@@ -114,6 +114,7 @@ class ATMApp:
         tk.Button(frame, text="Deposit", command=self.deposit, **btn_style).pack(pady=5)
         tk.Button(frame, text="Withdraw", command=self.withdraw, **btn_style).pack(pady=5)
         tk.Button(frame, text="Transaction History", command=self.show_transaction_history, **btn_style).pack(pady=5)
+        tk.Button(frame, text="convert currency", command=self.convert_currency, **btn_style).pack(pady=5)
         
         logout_style = btn_style.copy()
         logout_style.update({
@@ -163,6 +164,18 @@ class ATMApp:
         if not history_str:
             history_str = "No transactions found."
         messagebox.showinfo("Transaction History", history_str)
+
+    def convert_currency(self):
+        currency = simpledialog.askstring("Currency Conversion", "Enter target currency code (e.g., EUR, EGP):")
+
+        if not currency:
+            return  
+
+        try:
+            converted = self.ATM.convert_balance(self.account, currency)
+            messagebox.showinfo("Conversion Result", f"Your balance in {currency.upper()} is {converted:.2f}")
+        except ValueError as e:
+            messagebox.showerror("Conversion Failed", str(e))
         
     def logout(self):
         self.account = None

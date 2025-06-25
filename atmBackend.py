@@ -66,12 +66,34 @@ class ATM_Machine:
         self.cursor.execute("INSERT INTO transactions (user_account_number, type, amount) VALUES (?, ?, ?)",
                         (user_account_number, 'Withdraw', withdrawn_amount))   
         self.connection.commit()
-   
+    
     def get_transaction_history(self, user_account_number):
         self.cursor.execute("SELECT type, amount, timestamp FROM transactions WHERE user_account_number = ? ORDER BY timestamp DESC",
                             (user_account_number,))
         return self.cursor.fetchall()
-        
+    
+    def get_exchange_rate(self, target_currency):
+        try:
+            url = "https://open.er-api.com/v6/latest/USD"
+            response = requests.get(url, timeout=5)
+            response.raise_for_status()
+
+            data = response.json()
+            rates = data.get("rates", {})
+            return rates.get(target_currency.upper(), None)
+        except requests.exceptions.RequestException:
+            return None
+
+    def convert_balance(self, user_account_number, target_currency):
+        balance = self.get_balance(user_account_number)
+        if balance is None:
+            raise ValueError("Account not found")
+
+        rate = self.get_exchange_rate(target_currency)
+        if rate is None:
+            raise ValueError("Failed to fetch exchange rate")
+
+        return round(balance * rate, 2)
 
     
 

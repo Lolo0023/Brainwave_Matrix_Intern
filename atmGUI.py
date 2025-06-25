@@ -11,8 +11,6 @@ class ATMApp:
         self.account = None
         self.create_Welcome_page()
 
-    
-
 
     def create_Welcome_page(self):
         for widget in self.root.winfo_children():
@@ -116,7 +114,7 @@ class ATMApp:
         tk.Button(frame, text="Deposit", command=self.deposit, **btn_style).pack(pady=5)
         tk.Button(frame, text="Withdraw", command=self.withdraw, **btn_style).pack(pady=5)
         tk.Button(frame, text="Transaction History", command=self.show_transaction_history, **btn_style).pack(pady=5)
-        tk.Button(frame, text="Convert Currency", command=self.convert_currency, **btn_style).pack(pady=5)
+        
         logout_style = btn_style.copy()
         logout_style.update({
             "bg": "#e74c3c",
@@ -126,13 +124,35 @@ class ATMApp:
 
 
     def deposit(self):
-        amount = float(simpledialog.askstring("Deposit", "Enter amount to deposit:"))
-        self.ATM.deposit(self.account, amount)
+        input_money = simpledialog.askstring("Deposit", "Enter amount to deposit:")
+        if not input_money:
+            return
+        try:
+            amount = float(input_money)
+            if amount<=0:
+                messagebox.showerror("Error","Deposite amount must be greater than 0")
+                return
+            self.ATM.deposit(self.account, amount)
+            messagebox.showinfo("Success", f"deposite ${amount:.2f} successfully.")
+        except:
+            messagebox.showerror("Error", "Please enter a valid number.")
+
+
 
     def withdraw(self):
-        amount = float(simpledialog.askstring("Withdraw", "Enter amount to withdraw:"))
-        self.ATM.withdraw(self.account, amount)
-
+        input_money = simpledialog.askstring("Withdraw", "Enter amount to withdraw:")
+        if not input_money:
+            return
+        try:
+            amount=float(input_money)
+            if input_money<=0:
+                messagebox.showerror("Error","Withdrawal amount must be grater than 0")
+                return
+            self.ATM.withdraw(self.account, amount)
+            messagebox.showinfo("Success", f"deposite ${amount:.2f} successfully.")
+        except:
+            messagebox.showerror("Error", "Transaction declined: Not enough balance.")
+            
     def check_balance(self):
         balance = self.ATM.get_balance(self.account)
         messagebox.showinfo("Balance", f"Your balance is ${balance:.2f}")
@@ -143,15 +163,7 @@ class ATMApp:
         if not history_str:
             history_str = "No transactions found."
         messagebox.showinfo("Transaction History", history_str)
-
-    def convert_currency(self):
-        currency = simpledialog.askstring("Currency", "Enter target currency (e.g., EUR, GBP):")
-        converted = self.ATM.convert_balance(self.account, currency)
-        if converted:
-            messagebox.showinfo("Converted", f"Your balance in {currency.upper()} is {converted:.2f}")
-        else:
-            messagebox.showerror("Error", "Currency conversion failed.")
-            
+        
     def logout(self):
         self.account = None
         self.create_Welcome_page()

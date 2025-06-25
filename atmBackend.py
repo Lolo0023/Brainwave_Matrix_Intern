@@ -66,24 +66,12 @@ class ATM_Machine:
         self.cursor.execute("INSERT INTO transactions (user_account_number, type, amount) VALUES (?, ?, ?)",
                         (user_account_number, 'Withdraw', withdrawn_amount))   
         self.connection.commit()
-
-    def get_exchange_rate(self, target_currency):
-        url = "https://open.er-api.com/v6/latest/USD"
-        response = requests.get(url)
-        if response.status_code == 200:
-            rates = response.json().get("rates", {})
-            return rates.get(target_currency.upper(), None)
-        else:
-            return None
-    
+   
     def get_transaction_history(self, user_account_number):
         self.cursor.execute("SELECT type, amount, timestamp FROM transactions WHERE user_account_number = ? ORDER BY timestamp DESC",
                             (user_account_number,))
         return self.cursor.fetchall()
         
-    def convert_balance(self, user_account_number, target_currency):
-        user_balance = self.get_balance(user_account_number)
-        rate = self.get_exchange_rate(target_currency)
-        return user_balance * rate if rate else None
+
     
 
